@@ -1,5 +1,6 @@
 deploy_keepalived
 =========
+> This repository is only a mirror. Development and testing is done on a private gitea server.
 
 A brief description of the role goes here.
 
