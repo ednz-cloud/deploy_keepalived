@@ -1,0 +1,92 @@
+---
+# task/install_host file for deploy_keepalived
+- name: "Get releases for keepalived"
+  vars:
+    _keepalived_url_ext: "tags"
+  ansible.builtin.uri:
+    url: "{{ deploy_keepalived_github_api }}/{{ _keepalived_url_ext }}?per_page=100"
+    return_content: true
+  register: _keepalived_all_releases
+
+- name: "Get release for keepalived:{{ deploy_keepalived_version }}"
+  ansible.builtin.set_fact:
+    _keepalived_new_release: "{{ _keepalived_all_releases.json |
+      selectattr('name', 'eq', 'v'~deploy_keepalived_version if deploy_keepalived_version != 'latest' else _keepalived_all_releases.json |
+      map(attribute='name') |
+      first ) |
+      list |
+      first
+      }}"
+
+- name: "Set facts for wanted keepalived version"
+  ansible.builtin.set_fact:
+    deploy_keepalived_wanted_version: "{{ _keepalived_new_release.name|regex_replace('v', '') }}"
+
+- name: "Check if keepalived is already installed"
+  ansible.builtin.stat:
+    path: "{{ deploy_keepalived_config_dir }}/version"
+  changed_when: false
+  check_mode: false
+  register: _keepalived_is_installed
+
+- name: "Check current keepalived version"
+  ansible.builtin.command: "cat {{ deploy_keepalived_config_dir }}/version"
+  changed_when: false
+  check_mode: false
+  register: _keepalived_old_release
+  when: _keepalived_is_installed.stat.exists
+
+- name: "Set facts for current keepalived release"
+  ansible.builtin.set_fact:
+    deploy_keepalived_current_version: "{{ _keepalived_old_release.stdout | regex_replace('v', '') }}"
+  when: _keepalived_old_release.stdout is defined
+    and (_keepalived_old_release.stdout | length > 0)
+
+- name: "Install keepalived"
+  when: deploy_keepalived_current_version is not defined
+    or deploy_keepalived_wanted_version not in deploy_keepalived_current_version
+  block:
+    - name: "Downloading sources for keepalived:{{ deploy_keepalived_version }}"
+      ansible.builtin.get_url:
+        url: "https://keepalived.org/software/keepalived-{{ deploy_keepalived_wanted_version }}.tar.gz"
+        dest: "/tmp/keepalived.tar.gz"
+        owner: root
+        group: root
+        mode: "0755"
+
+    - name: "Extract keepalived sources in {{ deploy_keepalived_tmp_path }}"
+      ansible.builtin.unarchive:
+        src: /tmp/keepalived.tar.gz
+        dest: "/tmp"
+        remote_src: true
+      register: result_of_unarchive
+
+    - name: "Run configure command for keepalived:{{ deploy_keepalived_version }}"
+      ansible.builtin.command:
+        argv:
+          - "./configure"
+      args:
+        chdir: "{{ deploy_keepalived_tmp_path }}"
+
+    - name: "Run make command for keepalived:{{ deploy_keepalived_version }}"
+      community.general.make:
+        chdir: "{{ deploy_keepalived_tmp_path }}"
+
+    - name: "Run make install command for keepalived:{{ deploy_keepalived_version }}"
+      community.general.make:
+        chdir: "{{ deploy_keepalived_tmp_path }}"
+        target: install
+
+    - name: "Remove archive and unpacked directory"
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: absent
+      with_items:
+        - "/tmp/keepalived.tar.gz"
+        - "{{ deploy_keepalived_tmp_path }}"
+
+    - name: "Update version file"
+      ansible.builtin.copy:
+        content: "{{ deploy_keepalived_wanted_version }}"
+        dest: "{{ deploy_keepalived_config_dir }}/version"
+        mode: "0600"

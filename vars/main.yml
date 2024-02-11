@@ -1,2 +1,26 @@
 ---
 # vars file for deploy_keepalived
+deploy_keepalived_config_dir: /etc/keepalived
+deploy_keepalived_scripts_dir: /etc/keepalived/scripts
+deploy_keepalived_path: /usr/local/bin/keepalived
+deploy_keepalived_github_api: https://api.github.com/repos/acassen/keepalived
+deploy_keepalived_github_url: https://github.com/acassen/keepalived
+deploy_keepalived_tmp_path: "/tmp/keepalived-{{ deploy_keepalived_version}}"
+deploy_keepalived_user: root
+deploy_keepalived_group: root
+deploy_keepalived_required_packages:
+  - name: gcc
+    version: latest
+    state: present
+  - name: libssl-dev
+    version: latest
+    state: present
+  - name: libnl-3-dev
+    version: latest
+    state: present
+  - name: libnl-genl-3-dev
+    version: latest
+    state: present
+  - name: libsnmp-dev
+    version: latest
+    state: present
