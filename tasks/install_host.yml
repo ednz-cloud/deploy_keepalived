@@ -42,6 +42,9 @@
   when: _keepalived_old_release.stdout is defined
     and (_keepalived_old_release.stdout | length > 0)
 
+- name: "Get service keepalived"
+  ansible.builtin.service_facts:
+
 - name: "Install keepalived"
   when: deploy_keepalived_current_version is not defined
     or deploy_keepalived_wanted_version not in deploy_keepalived_current_version
@@ -61,12 +64,30 @@
         remote_src: true
       register: result_of_unarchive
 
+    - name: "Run build_setup command for keepalived:{{ deploy_keepalived_version }}"
+      ansible.builtin.command:
+        argv:
+          - "./build_setup"
+      args:
+        chdir: "{{ deploy_keepalived_tmp_path }}"
+      register: result_of_build_setup
+      changed_when: result_of_build_setup.rc != 0
+
     - name: "Run configure command for keepalived:{{ deploy_keepalived_version }}"
       ansible.builtin.command:
         argv:
           - "./configure"
+          - "--disable-dependency-tracking"
+          - "--enable-bfd"
+          - "--enable-json"
+          - "--enable-nftables"
+          - "--enable-snmp"
+          - "--enable-snmp-rfc"
+          - "--enable-regex"
       args:
         chdir: "{{ deploy_keepalived_tmp_path }}"
+      register: result_of_configure
+      changed_when: result_of_configure.rc != 0
 
     - name: "Run make command for keepalived:{{ deploy_keepalived_version }}"
       community.general.make:
@@ -90,3 +111,25 @@
         content: "{{ deploy_keepalived_wanted_version }}"
         dest: "{{ deploy_keepalived_config_dir }}/version"
         mode: "0600"
+
+    - name: "Ensure keepalived is running"
+      ansible.builtin.service:
+        name: "{{ deploy_keepalived_service_name }}"
+        state: started
+      register: _haproxy_service_health
+      until: _haproxy_service_health.status.ActiveState == "active"
+      retries: 15
+      delay: 2
+      when:
+        ansible_facts.services[deploy_keepalived_service_name~'.service'] is defined
+        and ansible_facts.services[deploy_keepalived_service_name~'.service']['state'] == 'running'
+
+- name: "Copy systemd service file for keepalived"
+  ansible.builtin.template:
+    src: "keepalived.service.j2"
+    dest: "/etc/systemd/system/keepalived.service"
+    owner: root
+    group: root
+    mode: "0644"
+  notify:
+    - "systemctl-daemon-reload"

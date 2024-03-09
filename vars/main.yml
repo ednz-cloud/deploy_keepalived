@@ -1,13 +1,19 @@
 ---
 # vars file for deploy_keepalived
 deploy_keepalived_config_dir: /etc/keepalived
-deploy_keepalived_scripts_dir: /etc/keepalived/scripts
-deploy_keepalived_path: /usr/local/bin/keepalived
+deploy_keepalived_scripts_dir: /etc/keepalived/scripts.d
+deploy_keepalived_path: /usr/local/sbin/keepalived
 deploy_keepalived_github_api: https://api.github.com/repos/acassen/keepalived
 deploy_keepalived_github_url: https://github.com/acassen/keepalived
 deploy_keepalived_tmp_path: "/tmp/keepalived-{{ deploy_keepalived_version}}"
+deploy_keepalived_service_name: "keepalived{{ '_container' if deploy_keepalived_deploy_method == 'docker' }}"
 deploy_keepalived_user: root
 deploy_keepalived_group: root
+deploy_keepalived_script_user: keepalived_script
+deploy_keepalived_script_group: keepalived_script
+deploy_keepalived_docker_image: ednxzu/keepalived
+deploy_keepalived_container_volume_map:
+  - "{{ deploy_keepalived_config_dir }}:/etc/keepalived"
 deploy_keepalived_required_packages:
   - name: gcc
     version: latest
@@ -22,5 +28,32 @@ deploy_keepalived_required_packages:
     version: latest
     state: present
   - name: libsnmp-dev
+    version: latest
+    state: present
+  - name: autoconf
+    version: latest
+    state: present
+  - name: automake
+    version: latest
+    state: present
+  - name: iptables
+    version: latest
+    state: present
+  - name: libip6tc-dev
+    version: latest
+    state: present
+  - name: libip4tc-dev
+    version: latest
+    state: present
+  - name: libmnl-dev
+    version: latest
+    state: present
+  - name: libnftnl-dev
+    version: latest
+    state: present
+  - name: libpcre2-dev
+    version: latest
+    state: present
+  - name: make
     version: latest
     state: present

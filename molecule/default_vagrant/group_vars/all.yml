@@ -1,0 +1,2 @@
+---
+deploy_keepalived_deploy_method: "docker"

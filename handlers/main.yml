@@ -1,2 +1,20 @@
 ---
 # handlers file for deploy_keepalived
+- name: "Reload systemd file"
+  ansible.builtin.systemd:
+    daemon_reload: true
+  listen: "systemctl-daemon-reload"
+
+- name: "Enable keepalived service"
+  ansible.builtin.service:
+    name: "{{ deploy_keepalived_service_name }}"
+    enabled: true
+  listen: "systemctl-enable-keepalived"
+
+- name: "Start keepalived service"
+  ansible.builtin.service:
+    name: "{{ deploy_keepalived_service_name }}"
+    state: restarted
+  listen: "systemctl-restart-keepalived"
+  throttle: 1
+  when: deploy_keepalived_start_service

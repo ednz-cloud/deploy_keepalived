@@ -1,11 +1,25 @@
 ---
 # task/prerequisites file for deploy_keepalived
-- name: "Install compilation dependencies"
-  ansible.builtin.include_role:
-    name: ednz_cloud.manage_apt_packages
-  vars:
-    manage_apt_packages_list: "{{ deploy_keepalived_required_packages }}"
+- name: "Prerequisites for host installation"
   when: deploy_keepalived_deploy_method == 'host'
+  block:
+    - name: "Install compilation dependencies"
+      ansible.builtin.include_role:
+        name: ednz_cloud.manage_apt_packages
+      vars:
+        manage_apt_packages_list: "{{ deploy_keepalived_required_packages }}"
+
+    - name: "Create group {{ deploy_keepalived_script_group }}"
+      ansible.builtin.group:
+        name: "{{ deploy_keepalived_script_group }}"
+        state: present
+
+    - name: "Create user {{ deploy_keepalived_script_user }}"
+      ansible.builtin.user:
+        name: "{{ deploy_keepalived_script_user }}"
+        group: "{{ deploy_keepalived_script_group }}"
+        shell: /bin/false
+        state: present
 
 - name: "Create directory {{ deploy_keepalived_config_dir }}"
   ansible.builtin.file:

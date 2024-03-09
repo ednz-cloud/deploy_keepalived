@@ -1,0 +1,23 @@
+---
+# task/install_docker file for deploy_keepalived
+- name: "Update container volume list"
+  ansible.builtin.set_fact:
+    deploy_keepalived_container_volume_map: "{{ deploy_keepalived_container_volume_map + deploy_keepalived_extra_container_volumes }}"
+
+- name: "Include ednz_cloud.docker_systemd_service"
+  ansible.builtin.include_role:
+    name: ednz_cloud.docker_systemd_service
+  vars:
+    docker_systemd_service_container_name: "keepalived"
+    docker_systemd_service_image: "{{ deploy_keepalived_docker_image }}:{{ deploy_keepalived_version }}"
+    docker_systemd_service_container_env: "{{ deploy_keepalived_env_variables }}"
+    docker_systemd_service_flags:
+      - network: host
+      - cap-add:
+          - NET_ADMIN
+          - NET_RAW
+          - NET_BROADCAST
+      - volume: "{{ deploy_keepalived_container_volume_map }}"
+    docker_systemd_service_name: "{{ docker_systemd_service_container_name }}_container"
+    docker_systemd_service_state: "{{ 'started' if deploy_keepalived_start_service else 'stopped'}}"
+    docker_systemd_service_restart: "{{ true if deploy_keepalived_start_service else false}}"

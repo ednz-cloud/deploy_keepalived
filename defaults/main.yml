@@ -1,4 +1,22 @@
 ---
 # defaults file for deploy_keepalived
 deploy_keepalived_deploy_method: "host"
-deploy_keepalived_version: "2.2.5"
+deploy_keepalived_version: "2.2.8"
+deploy_keepalived_start_service: true
+deploy_keepalived_env_variables: {}
+
+deploy_keepalived_vrrp_instance_name: "{{ ansible_hostname }}"
+deploy_keepalived_interface: "{{ ansible_default_ipv4.interface }}"
+deploy_keepalived_state: "BACKUP"
+deploy_keepalived_router_id: 50
+deploy_keepalived_priority: 100
+deploy_keepalived_advert_interval: 1
+deploy_keepalived_unicast_source: "{{ ansible_default_ipv4.address }}"
+deploy_keepalived_unicast_peers: []
+deploy_keepalived_auth_passwd: "password"
+deploy_keepalived_virtual_ips:
+  - 192.168.1.100/32
+deploy_keepalived_notify_script: notify.sh
+
+deploy_keepalived_custom_scripts_src:
+deploy_keepalived_extra_container_volumes: []
