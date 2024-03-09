@@ -5,11 +5,11 @@
   block:
     - name: "Create keepalived environment file"
       ansible.builtin.template:
-        src: keepalived.j2
-        dest: "/etc/default/keepalived"
+        src: keepalived.env.j2
+        dest: "{{ deploy_keepalived_config_dir }}/keepalived.env"
         owner: "{{ deploy_keepalived_user }}"
         group: "{{ deploy_keepalived_group }}"
-        mode: "0644"
+        mode: "0600"
 
 - name: "Copy keepalived.conf template"
   ansible.builtin.template:

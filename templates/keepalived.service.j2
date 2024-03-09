@@ -1,3 +1,4 @@
+# {{ ansible_managed }}
 [Unit]
 Description=Keepalive Daemon (LVS and VRRP)
 After=network-online.target
@@ -6,7 +7,7 @@ ConditionFileNotEmpty={{ deploy_keepalived_config_dir }}/keepalived.conf
 
 [Service]
 # Type=notify
-EnvironmentFile=-/etc/default/{{ deploy_keepalived_service_name }}
+EnvironmentFile=-{{ deploy_keepalived_config_dir }}/keepalived.env
 ExecStart={{ deploy_keepalived_path }} -f {{ deploy_keepalived_config_dir }}/keepalived.conf --dont-fork $DAEMON_ARGS
 ExecReload=/bin/kill -HUP $MAINPID
 
