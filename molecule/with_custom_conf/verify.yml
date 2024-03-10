@@ -69,6 +69,12 @@
 
                 nopreempt
 
+                unicast_src_ip {{ ansible_default_ipv4.address }}
+                unicast_peer {
+                  192.168.1.13
+                  192.168.1.14
+                  192.168.1.15
+                }
 
                 authentication {
                   auth_type PASS
@@ -161,7 +167,7 @@
         - name: "Verify file /usr/local/sbin/keepalived"
           ansible.builtin.assert:
             that:
-              - keepalived_version.stderr | regex_search('^Keepalived v\\d+\\.\\d+\\.\\d')
+              - keepalived_version.stderr | regex_search('^Keepalived v2\\.2\\.7')
               - stat_usr_local_sbin_keepalived.stat.exists
               - stat_usr_local_sbin_keepalived.stat.isreg
               - stat_usr_local_sbin_keepalived.stat.pw_name == 'root'

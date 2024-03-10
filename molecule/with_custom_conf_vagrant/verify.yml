@@ -45,6 +45,12 @@
 
                 nopreempt
 
+                unicast_src_ip {{ ansible_default_ipv4.address }}
+                unicast_peer {
+                  192.168.1.13
+                  192.168.1.14
+                  192.168.1.15
+                }
 
                 authentication {
                   auth_type PASS
@@ -111,7 +117,7 @@
               --cap-add "NET_RAW" \
               --cap-add "NET_BROADCAST" \
               --volume "/etc/keepalived:/etc/keepalived" \
-              ednxzu/keepalived:2.2.8
+              ednxzu/keepalived:2.2.7
               ExecStop=/usr/bin/docker stop keepalived
               SyslogIdentifier=keepalived
               Restart=always
@@ -144,7 +150,7 @@
         - name: "Verify container keepalived"
           ansible.builtin.assert:
             that:
-              - keepalived_version.stderr | regex_search('^Keepalived v\\d+\\.\\d+\\.\\d')
+              - keepalived_version.stderr | regex_search('^Keepalived v2\\.2\\.7')
 
     - name: "Test: interfaces"
       block:

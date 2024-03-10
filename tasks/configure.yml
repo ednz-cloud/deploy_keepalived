@@ -26,8 +26,8 @@
   ansible.builtin.template:
     src: "{{ item }}"
     dest: "{{ deploy_keepalived_scripts_dir }}/{{ (item | basename) }}"
-    owner: "{{ deploy_keepalived_script_user if deploy_keepalived_deploy_method == 'host' else 'root' }}"
-    group: "{{ deploy_keepalived_script_user if deploy_keepalived_deploy_method == 'host' else 'root' }}"
+    owner: "{{ deploy_keepalived_script_user }}"
+    group: "{{ deploy_keepalived_script_user }}"
     mode: "0700"
   with_fileglob:
     - "files/*"
@@ -36,8 +36,8 @@
   ansible.builtin.template:
     src: "{{ item }}"
     dest: "{{ deploy_keepalived_scripts_dir }}/{{ (item | basename) }}"
-    owner: "{{ deploy_keepalived_script_user if deploy_keepalived_deploy_method == 'host' else 'root' }}"
-    group: "{{ deploy_keepalived_script_user if deploy_keepalived_deploy_method == 'host' else 'root' }}"
+    owner: "{{ deploy_keepalived_script_user }}"
+    group: "{{ deploy_keepalived_script_user }}"
     mode: "0700"
   with_fileglob:
     - "{{ deploy_keepalived_custom_scripts_src }}/*"
