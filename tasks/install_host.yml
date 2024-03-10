@@ -48,6 +48,8 @@
 - name: "Install keepalived"
   when: deploy_keepalived_current_version is not defined
     or deploy_keepalived_wanted_version not in deploy_keepalived_current_version
+  vars:
+    deploy_keepalived_tmp_path: "/tmp/keepalived-{{ deploy_keepalived_wanted_version }}"
   block:
     - name: "Downloading sources for keepalived:{{ deploy_keepalived_version }}"
       ansible.builtin.get_url:

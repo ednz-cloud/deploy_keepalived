@@ -5,7 +5,6 @@ deploy_keepalived_scripts_dir: /etc/keepalived/scripts.d
 deploy_keepalived_path: /usr/local/sbin/keepalived
 deploy_keepalived_github_api: https://api.github.com/repos/acassen/keepalived
 deploy_keepalived_github_url: https://github.com/acassen/keepalived
-deploy_keepalived_tmp_path: "/tmp/keepalived-{{ deploy_keepalived_version}}"
 deploy_keepalived_service_name: "keepalived{{ '_container' if deploy_keepalived_deploy_method == 'docker' }}"
 deploy_keepalived_user: root
 deploy_keepalived_group: root
