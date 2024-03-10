@@ -1,7 +1,7 @@
 ---
 # defaults file for deploy_keepalived
 deploy_keepalived_deploy_method: "host"
-deploy_keepalived_version: "2.2.8"
+deploy_keepalived_version: "latest"
 deploy_keepalived_start_service: true
 deploy_keepalived_env_variables: {}
 
