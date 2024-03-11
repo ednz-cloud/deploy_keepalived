@@ -23,3 +23,6 @@ deploy_keepalived_notify_script: notify.sh
 
 deploy_keepalived_custom_scripts_src:
 deploy_keepalived_extra_container_volumes: []
+
+deploy_keepalived_use_custom_config: true
+deploy_keepalived_custom_config_src: /tmp/keepalived.conf.j2

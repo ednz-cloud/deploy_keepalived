@@ -100,6 +100,15 @@ deploy_keepalived_extra_container_volumes: []
 Extra volumes to mount to the container if using the `docker` deploy method.
 By default, `/etc/keepalived` (host) will be mounted to `/etc/keepalived` (container)
 
+```yaml
+deploy_keepalived_use_custom_config: false # by default, set to false
+```
+This variable lets you switch to using a custom keepalived.conf template file. By default, this is false, and the role will use the default keepalived.conf template.
+
+```yaml
+deploy_keepalived_custom_config_src: # by default, unset
+```
+If `deploy_keepalived_use_custom_config: true`, this sets the path for the custom keepalived.conf template to use. This can either be a static file, or a jinja2 template. It will be copied to `/etc/keepalived/keepalived.conf` on the target machine.
 
 
 Dependencies
